@@ -161,7 +161,7 @@ _____contents of main when used -Ofast optimizer_____
 ## 2. create a C program that shows the maximum and minimum values of 64bit unsigend and signed numbers
 
 ```
-sign_unsign.c
+signedhighesh.c
 ```
 ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/3ccd6525-edb7-4ec9-b508-4792bb5279c5)
 
