@@ -262,3 +262,1075 @@ To store 64 bits of data from mem to reg, we use 8*8bit stores ie., m[0],m[1]...
 <summary>DAY 3 </summary>
 <br>
 </details>
+# Introduction to open-source simulator iverilog
+**Simulator:** RTL design is checked for adherence to the spec by simulating the design. Simulator is the tool used for simulating the design
+
+**Design:** Design is the actual verilog codeor set of verilog codes which has the intended functionality to meet with the required specification
+
+**Testbench:** Testbench is the setup to apply stimulus to the design to check its functionality
+### How do simulator works?
+- It looks for the changes in input signal
+- upon change to the input the out put is evaluated
+
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/fc0678b8-9f76-4875-b9ec-186e9014cf81)
+
+
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/900a7ebc-30d1-45ad-97e9-917b3d9f4fd9)
+
+
+# Labs using iverilog and gtkwave
+## Introduction to lab
+- Make new directory `mkdie VSD`
+- `git clone https://github.com/kunalg123/sky130RTLDesignAndSynthesisWorkshop.git`
+- This should create a folder `sky130RTLDesignAndSynthesisWorkshop` in `VDS` directory
+- You could see two folders under `sky130RTLDesignAndSynthesisWorkshop`
+   1. my_lib: It contains all the standard cell libraries and verilog module
+   2. verilog_files: It contains all the source code and testbench required for the lab
+
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/d95b299a-8ae8-4cc4-be6b-6542da15e850)
+
+
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/a5351b2d-6289-4fe6-a0c1-737db78b654a)
+
+
+## Introduction iverilog gtkwave
+- Go to verilog_files directory
+- Load Design and Testbench using the command `iverilog good_mux.v tb_good_mux.v`
+### good_mux.v
+``` v
+module good_mux (input i0 , input i1 , input sel , output reg y);
+always @ (*)
+begin
+	if(sel)
+		y <= i1;
+	else 
+		y <= i0;
+end
+endmodule
+```
+### tb_good_mux.v
+``` v
+timescale 1ns / 1ps
+module tb_good_mux;
+	// Inputs
+	reg i0,i1,sel;
+	// Outputs
+	wire y;
+
+        // Instantiate the Unit Under Test (UUT)
+	good_mux uut (
+		.sel(sel),
+		.i0(i0),
+		.i1(i1),
+		.y(y)
+	);
+
+	initial begin
+	$dumpfile("tb_good_mux.vcd");
+	$dumpvars(0,tb_good_mux);
+	// Initialize Inputs
+	sel = 0;
+	i0 = 0;
+	i1 = 0;
+	#300 $finish;
+	end
+
+always #75 sel = ~sel;
+always #10 i0 = ~i0;
+always #55 i1 = ~i1;
+endmodule
+```
+
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/7239cf3e-d20f-4db8-9b23-736b2549e92b)
+
+
+- Upon loading sucessfully `a.out` will be generated
+- Execute the generated file it would dump `gtkwave tb_good_mux.vcd` file
+
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/213a1a3b-41da-4ffd-995b-56da3d3737a4)
+
+- Load the vcd file to simulator using the command `gtkwave tb_good_mux.vcd`
+  
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/b752119d-e137-4568-b3c7-159150ed5eaf)
+
+# Introduction to Yosys and Logic synthesis
+## Introduction to yosys
+Yosys is an synthesizer which is used to convert RTL to netlist
+
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/b1898ff0-3dae-4481-84d0-059357999efd)
+
+
+**`netlist` is the representation of `DESIGN` in the form of standard cells present in `.lib`**
+
+- To verify synthesis Netlist need to be fed to iverilog along with testbench
+- vcd file generated from iverilog need to be fed to gtkwave simulator
+- The output we get should be same as the output we got during RTL simulator
+
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/f0b78ea8-e0df-4e81-869f-f1bdd1e4c624)
+
+## Introduction to logic synthesis
+Logic synthesis is a vital step in digital circuit design where high-level descriptions of circuits are transformed into specific implementations using logic gates. It optimizes circuits for factors like performance, area, power, and cost. The process includes library mapping, optimization, technology mapping, timing analysis, and verification. It's an iterative process often done with specialized software tools, enabling efficient hardware design.
+
+**.lib:** 
+- Logic synthesis tools use a library of standard cells. These cells are predefined logic gates with different functionalities and characteristics
+- It will also contain fast and slow version of same gate
+### why fast and slow version of same gate?
+Fast and slow versions of gates are essential in digital circuit design to balance between clock frequency and timing constraints. Fast gates have shorter propagation delays and are used to reduce setup and hold time violations, allowing for higher clock frequencies. Slow gates, with longer delays, can be used to intentionally slow down critical paths or address timing issues. The Tclk formula helps calculate the maximum clock frequency while considering these factors.
+
+**Tclk formula:** ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/b52025b4-dd5b-4963-afc0-ddeef120ca9d)
+
+
+- **t_setup:** The setup time is the minimum time before the clock edge when the input data must be stable.
+- **t_hold:** The hold time is the minimum time after the clock edge during which the input data must remain stable.
+- **t_propagation:** This term represents the propagation delay of the logic gates in the critical path.
+- **Tcq:** This term represents the clock-to-q delay of the flip-flops or registers used in the design. It's often a fixed value based on the chosen flip-flop technology.
+
+# Lab using Yosys and Sky130 PDKs
+Steps to realize good_mux(design) in terms of standard cells avilable in library sky130_fd_sc_hd__tt_025C_1v80.lib
++ Go to verilog_files directory
++ once you get to verilog_files directory, Invoke yosys by using the command `yosys`
+  ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/8de806de-7443-43ba-9788-b5382d851cb5)
+
+  1. Read library: `read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib`
+     ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/1ace6948-9923-466f-a48e-4a9b8972cf97)
+
+  3. Read design: `read_verilog good_mux.v`
+     ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/0e403154-57bb-4f58-be5e-95e227b88cf3)
+
+
+  5. Synthesis: `synth -top good_mux`
+  6. ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/8516a42c-46b2-4d18-88ab-f5ac229b8edb)
+
+
+  7. Generate netlist: `abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib`
+     ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/59552a19-baaf-4794-85cb-26c66a3cc90b)
+
+  9. Logic realized: `show`
+      ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/9e632a1b-08d6-45c8-8523-861d88216040)
+
+
+  10. Write netlist: `write_verilog -noattr good_mux_netlist.v`, `!gvim good_mux_netlist.v`
+      ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/0013c7f5-3643-4c95-9cf1-eeec717cc342)
+
+### good_mux_netlist.v
+``` v
+/* Generated by Yosys 0.32+51 (git sha1 6405bbab1, gcc 12.3.0-1ubuntu1~22.04 -fPIC -Os) */
+
+module good_mux(i0, i1, sel, y);
+  wire _0_;
+  wire _1_;
+  wire _2_;
+  wire _3_;
+  input i0;
+  wire i0;
+  input i1;
+  wire i1;
+  input sel;
+  wire sel;
+  output y;
+  wire y;
+  sky130_fd_sc_hd__mux2_1 _4_ (
+    .A0(_0_),
+    .A1(_1_),
+    .S(_2_),
+    .X(_3_)
+  );
+  assign _0_ = i0;
+  assign _1_ = i1;
+  assign _2_ = sel;
+  assign y = _3_;
+endmodule
+```
+# Introduction to timing dot libs
+### sky130_fd_sc_hd__tt_025C_1v80.lib
+
++ **sky130:** This indicates that the library is associated with the SkyWater 130nm process technology. Process technology refers to the manufacturing process used to create integrated circuits (ICs) and determines factors like transistor size and performance characteristics.
+  
++ **fd_sc_hd:** These letters likely stand for different aspects of the library. "fd" might refer to "Foundation," suggesting that this library contains fundamental building blocks for digital IC design. "sc" could stand for "Standard Cells," which are pre-designed logic gates used in IC design. "hd" could refer to "high-density" libraries, which typically contain smaller, more compact cell designs for achieving higher logic density in ICs.
+  
++ **tt_025C:** This part of the name could refer to the library's operating conditions or temperature and voltage settings. "tt" might stand for "typical temperature," and "025C" could refer to 25 degrees Celsius, a common temperature for IC specifications. These conditions are important for characterizing the library's performance.
+  
++ **1v80:** This likely represents the supply voltage for the library. In this case, "1v80" indicates a supply voltage of 1.8 volts, which is a common voltage level for digital ICs.
+
+### Libraries contain
+
++ **Standard Cells:** This library is likely to include a variety of standard cells, which are pre-designed building blocks for digital logic. Standard cells consist of logic gates (e.g., AND, OR, XOR), flip-flops, latches, multiplexers, and other fundamental digital components. These cells are characterized for the specific process technology (in this case, SkyWater 130nm) and operating conditions (temperature and voltage).
+  
++ **Timing Information:** The library will provide timing information for each standard cell. This information includes parameters like propagation delay, setup time, hold time, and other timing characteristics. Designers use this data to ensure that signals propagate correctly through the logic gates.
+  
++ **Power Characteristics:** Power consumption data is crucial for estimating the energy usage of a design. The library will typically include information on dynamic power (power consumed when the circuit is switching) and static power (power consumed when the circuit is idle).
+  
++ **Pin and I/O Information:** The library will specify the input and output pins for each standard cell, including pin names, directions (input or output), and electrical characteristics.
+  
++ **Library Files:** These library files often come in various formats, including Liberty (.lib) files, which contain detailed timing and power information, and Verilog models, which allow designers to use these standard cells in their digital designs.
+  
++ **Characterization Data:** The library may include data characterizing how the standard cells perform under different operating conditions, including variations in temperature and supply voltage. This helps designers account for variability in their designs.
+  
++ **Technology Files:** These files might also include information about the specific characteristics of the SkyWater 130nm process technology, such as transistor models, interconnect information, and other process-related data.
+
+# Hierarchical vs Flat Synthesis
+### Hierarchical Synthesis
+- Hierarchical synthesis involves dividing the design into logical modules or blocks and synthesizing each module separately.
+- These modules can have their own hierarchies, and they communicate through well-defined interfaces
+- It enhances reusability, as individual modules can be reused in other designs.
+- Supports better scalability for large, complex designs.
+
+### Steps to Hierarchical Synthesis
+- Go to verilog_files directory
+- once you get to verilog_files directory, Invoke yosys by using the command `yosys`
+- once yosys is invoked follow the above sequence of commands
+  ``` sh
+  read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib  
+  read_verilog multiple_modules.v
+  synth -top multiple_modules
+  abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+  show multiple_modules
+  write_verilog -noattr multiple_modules_hier.v
+  !gvim multiple_modules_hier.v
+  ```
+  ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/8ceb5323-6a38-40ea-b66a-689b0547df5b)
+
+  **multiple_modules_hier.v**
+  ``` v
+  /* Generated by Yosys 0.32+51 (git sha1 6405bbab1, gcc 12.3.0-1ubuntu1~22.04 -fPIC -Os) */
+
+  module multiple_modules(a, b, c, y);
+    input a;
+    wire a;
+    input b;
+    wire b;
+    input c;
+    wire c;
+    wire net1;
+    output y;
+    wire y;
+    sub_module1 u1 (
+      .a(a),
+      .b(b),
+      .y(net1)
+    );
+    sub_module2 u2 (
+      .a(net1),
+      .b(c),
+      .y(y)
+    );
+  endmodule
+ 
+  module sub_module1(a, b, y);
+    wire _0_;
+    wire _1_;
+    wire _2_;
+    input a;
+    wire a;
+    input b;
+    wire b;
+    output y;
+    wire y;
+    sky130_fd_sc_hd__and2_0 _3_ (
+      .A(_1_),
+      .B(_0_),
+      .X(_2_)
+    );
+    assign _1_ = b;
+    assign _0_ = a;
+    assign y = _2_;
+  endmodule
+
+  module sub_module2(a, b, y);
+    wire _0_;
+    wire _1_;
+    wire _2_;
+    input a;
+    wire a;
+    input b;
+    wire b;
+    output y;
+    wire y;
+    sky130_fd_sc_hd__or2_0 _3_ (
+      .A(_1_),
+      .B(_0_),
+      .X(_2_)
+    );
+    assign _1_ = b;
+    assign _0_ = a;
+    assign y = _2_;
+  endmodule
+  ```
+### Flat Synthesis
+- In flat synthesis, the entire design is synthesized as a single, monolithic entity.
+- All modules, submodules, and logic are flattened into a single level of hierarchy.
+- This means that all components, regardless of their intended functionality, are combined into a single giant netlist
+- Best suited for simple designs where complexity is low and maintainability isn't a significant concern.
+
+### Steps to Flat Synthesis
+- Go to verilog_files directory
+- once you get to verilog_files directory, Invoke yosys by using the command `yosys`
+- once yosys is invoked follow the above sequence of commands
+  ``` sh
+  read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib  
+  read_verilog multiple_modules.v
+  synth -top multiple_modules
+  abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+  flatten
+  show
+  write_verilog -noattr multiple_modules_flat.v
+  !gvim multiple_modules_flat.v
+  ```
+  ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/f988da11-18b1-435f-95d9-2e8bab49491d)
+
+
+  **multiple_modules_flat.v**
+  ``` v
+  /* Generated by Yosys 0.32+51 (git sha1 6405bbab1, gcc 12.3.0-1ubuntu1~22.04 -fPIC -Os) */
+
+  module multiple_modules(a, b, c, y);
+    wire _0_;
+    wire _1_;
+    wire _2_;
+    wire _3_;
+    wire _4_;
+    wire _5_;
+    input a;
+    wire a;
+    input b;
+    wire b;
+    input c;
+    wire c;
+    wire net1;
+    wire \u1.a ;
+    wire \u1.b ;
+    wire \u1.y ;
+    wire \u2.a ;
+    wire \u2.b ;
+    wire \u2.y ;
+    output y;
+    wire y;
+    sky130_fd_sc_hd__and2_0 _6_ (
+      .A(_1_),
+      .B(_0_),
+      .X(_2_)
+    );
+    sky130_fd_sc_hd__or2_0 _7_ (
+      .A(_4_),
+      .B(_3_),
+      .X(_5_)
+    );
+    assign _4_ = \u2.b ;
+    assign _3_ = \u2.a ;
+    assign \u2.y  = _5_;
+    assign \u2.a  = net1;
+    assign \u2.b  = c;
+    assign y = \u2.y ;
+    assign _1_ = \u1.b ;
+    assign _0_ = \u1.a ;
+    assign \u1.y  = _2_;
+    assign \u1.a  = a;
+    assign \u1.b  = b;
+    assign net1 = \u1.y ;
+  endmodule
+  ```
+# Various Flop Coding Styles and optimization
+## Flop coding styles
+**Asynchronous Reset D Flip-Flop**
+- When an asynchronous reset input is activated (set to '1'), regardless of the clock signal, the stored value is forced to '0'.
+- Otherwise, on the positive edge of the clock signal, the stored value is updated with the data input.
+### dff_asyncres_syncres.v
+``` v
+module dff_asyncres_syncres ( input clk , input async_reset , input sync_reset , input d , output reg q );
+always @ (posedge clk , posedge async_reset)
+begin
+	if(async_reset)
+		q <= 1'b0;
+	else if (sync_reset)
+		q <= 1'b0;
+	else	
+		q <= d;
+end
+endmodule
+```
+
+**Asynchronous Set D Flip-Flop**
+- When an asynchronous set input is activated (set to '1'), regardless of the clock signal, the stored value is forced to '1'.
+- Otherwise, on the positive edge of the clock signal, the stored value is updated with the data input.
+### dff_async_set.v
+``` v
+module dff_async_set ( input clk ,  input async_set , input d , output reg q );
+always @ (posedge clk , posedge async_set)
+begin
+	if(async_set)
+		q <= 1'b1;
+	else	
+		q <= d;
+end
+endmodule
+```
+
+**Synchronous Reset D Flip-Flop**
+- When a synchronous reset input is activated (set to '1') at the positive edge of the clock signal, the stored value is forced to '0'.
+- Otherwise, on the positive edge of the clock signal, the stored value is updated with the data input.
+### dff_syncres.v
+``` v
+module dff_syncres ( input clk , input async_reset , input sync_reset , input d , output reg q );
+always @ (posedge clk )
+begin
+	if (sync_reset)
+		q <= 1'b0;
+	else	
+		q <= d;
+end
+endmodule
+```
+
+**D Flip-Flop with Asynchronous Reset and Synchronous Reset**
+- This flip-flop combines both asynchronous and synchronous reset features.
+- When the asynchronous reset input is activated (set to '1'), the stored value is immediately forced to '0'.
+- When the synchronous reset input is activated (set to '1') at the positive edge of the clock signal, the stored value is forced to '0'.
+- Otherwise, on the positive edge of the clock signal, the stored value is updated with the data input.
+### dff_asyncres_syncres.v
+``` v
+module dff_asyncres_syncres ( input clk , input async_reset , input sync_reset , input d , output reg q );
+always @ (posedge clk , posedge async_reset)
+begin
+	if(async_reset)
+		q <= 1'b0;
+	else if (sync_reset)
+		q <= 1'b0;
+	else	
+		q <= d;
+end
+endmodule
+```
+## Flop synthesis simulations 
+**Asynchronous Reset D Flip-Flop**
+
+**Simulation**
+
+Go to verilog_files directory where the design and test_bench are present
+
+Run the following commands to simulate dff_asyncres.v
+```
+iverilog dff_asyncres.v tb_dff_asyncres.v
+./a.ot
+gtkwave tb_dff_asyncres.vcd
+```
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/b747ed55-8e27-45de-a1c3-a2ba5a55e9a4)
+
+
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/9e69afcd-bb2c-46d8-8988-ff5b8dc28d34)
+
+
+**Synthsis**
+
+Go to verilog_files directory and invoke yosys
+
+Once you invoke yosys, Run following commands to Synthsis dff_asyncres
+```
+  read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib  
+  read_verilog dff_asyncres.v
+  synth -top dff_asyncres
+  dfflibmap -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib 
+  abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+  show
+```
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/23d0a8e4-49b5-4b2e-b9bf-d41ad8d940ee)
+
+
+**Asynchronous set D Flip-Flop**
+
+**Simulation**
+
+Go to verilog_files directory where the design and test_bench are present
+
+Run the following commands to simulate dff_async_set.v
+```
+iverilog dff_async_set.v tb_dff_async_set.v
+./a.ot
+gtkwave tb_dff_async_set.vcd
+```
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/d6d98a90-42f5-456d-ace4-d282c333085c)
+
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/3263a188-82e0-4ee9-b3ed-0cb4879c8fc7)
+
+
+**Synthsis**
+
+Go to verilog_files directory and invoke yosys
+
+Once you invoke yosys, Run following commands to Synthsis dff_async_set
+```
+  read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib  
+  read_verilog dff_async_set.v
+  synth -top dff_async_set
+  dfflibmap -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib 
+  abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+  show
+```
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/63e81ea4-a074-47f9-810e-485eca83d583)
+
+
+**Asynchronous Reset D Flip-Flop**
+
+**Simulation**
+
+Go to verilog_files directory where the design and test_bench are present
+
+Run the following commands to simulate dff_syncres.v
+```
+iverilog dff_asyncres.v tb_dff_syncres.v
+./a.ot
+gtkwave tb_dff_syncres.vcd
+```
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/bb46ccb7-a4e6-40b2-acc1-8c3d2eb59b94)
+
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/e7fda44c-8851-46a9-8f15-43e47fcf48e0)
+
+
+**Synthsis**
+
+Go to verilog_files directory and invoke yosys
+
+Once you invoke yosys, Run following commands to Synthsis dff_syncres
+```
+  read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib  
+  read_verilog dff_syncres.v
+  synth -top dff_syncres
+  dfflibmap -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib 
+  abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+  show
+```
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/6baaae48-520a-4e0a-9c5a-c2efb422e0fa)
+
+
+ ## Interesting optimisations 
+ **mult_2.v**
+``` v
+module mul2 (input [2:0] a, output [3:0] y);
+	assign y = a * 2;
+endmodule
+```
+**Synthsis**
+```
+read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib  
+read_verilog mult_2.v
+synth -top mul2
+abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+show
+write_verilog -noattr mul2_netlist.v
+!gvim mul2_netlist.v
+```
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/f172a636-1f96-4f9e-8968-15125fbd845d)
+
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/7db5b947-6047-443b-91c1-cb1e5aaa4ad3)
+
+
+**mul2_netlist.v**
+``` v
+/* Generated by Yosys 0.32+51 (git sha1 6405bbab1, gcc 12.3.0-1ubuntu1~22.04 -fPIC -Os) */
+
+module mul2(a, y);
+  input [2:0] a;
+  wire [2:0] a;
+  output [3:0] y;
+  wire [3:0] y;
+  assign y = { a, 1'h0 };
+endmodule
+```
+
+ **mult_8.v**
+``` v
+module mult8 (input [2:0] a , output [5:0] y);
+	assign y = a * 9;
+endmodule
+```
+**Synthsis**
+```
+read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib  
+read_verilog mult_2.v
+synth -top mult8
+abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+show
+write_verilog -noattr mult8_netlist.v
+!gvim mult8_netlist.v
+```
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/18ae7ea5-b8ce-40d6-ab4a-5c78247d6011)
+
+
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/5f32ecec-0775-43b8-b521-ba3641fb37e9)
+
+**mult8_netlist.v**
+``` v
+/* Generated by Yosys 0.32+51 (git sha1 6405bbab1, gcc 12.3.0-1ubuntu1~22.04 -fPIC -Os) */
+
+module mult8(a, y);
+  input [2:0] a;
+  wire [2:0] a;
+  output [5:0] y;
+  wire [5:0] y;
+  assign y = { a, a };
+endmodule
+```
+# Introduction to optimizations
+1. **CCombinational optimization**
+    - Combinational optimization is a branch of mathematical optimization that focuses on selecting the best combination of discrete options to optimize a given function. 
+    - Two methods within computational optimization are:
+       + **Constant Propagation:** This technique identifies and replaces variables or expressions with their constant values, reducing redundancy in code and improving performance.
+       + **Boolean Optimization:** This method simplifies boolean expressions or logic circuits by reducing the number of logical gates or terms while preserving the same logical behavior, which is useful in digital circuit design and logical reasoning.
+
+2. **Sequential logic optimization**
+    - Sequential logic optimization is the process of enhancing the performance and efficiency of digital circuits containing flip-flops and state elements.
+    - Methods under this optimization umbrella include:
+       + **Sequential Constant Propagation:** Identifies and propagates constant values through flip-flops to reduce redundant state transitions.
+       + **State Optimization:** Reduces the number of states in finite state machines (FSMs) by merging equivalent states, simplifying the circuit.
+       + **Sequential Logic Cloning:** Replicates portions of sequential logic to alleviate bottlenecks and improve circuit throughput.
+       + **Retiming:** Adjusts the placement of flip-flops within a circuit to optimize timing, balance critical paths, and enhance overall performance.
+
+# Combinational logic optimizations
+**opt_check.v**
+``` v
+module opt_check (input a , input b , output y);
+	assign y = a?b:0;
+endmodule
+```
+**Synthesis**
+```
+read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib  
+read_verilog opt_check.v
+synth -top opt_check
+opt_clean -purge
+abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+show
+```
+
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/a7963051-37b3-4327-b8b9-8766d156728b)
+
+
+**opt_check2.v**
+``` v
+module opt_check2 (input a , input b , output y);
+	assign y = a?1:b;
+endmodule
+```
+**Synthesis**
+```
+read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib  
+read_verilog opt_check2.v
+synth -top opt_check2
+opt_clean -purge
+abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+show
+```
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/1da929eb-d5e2-4cdc-9ece-82926d950461)
+
+**opt_check3.v**
+``` v
+module opt_check3 (input a , input b, input c , output y);
+	assign y = a?(c?b:0):0;
+endmodule
+```
+**Synthesis**
+```
+read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib  
+read_verilog opt_check3.v
+synth -top opt_check3
+opt_clean -purge
+abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+show
+```
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/3e0bb879-dfa0-4691-a003-1a51a880e5ce)
+
+
+**multiple_module_opt.v**
+``` v
+module sub_module1(input a , input b , output y);
+ assign y = a & b;
+endmodule
+
+
+module sub_module2(input a , input b , output y);
+ assign y = a^b;
+endmodule
+
+
+module multiple_module_opt(input a , input b , input c , input d , output y);
+wire n1,n2,n3;
+
+sub_module1 U1 (.a(a) , .b(1'b1) , .y(n1));
+sub_module2 U2 (.a(n1), .b(1'b0) , .y(n2));
+sub_module2 U3 (.a(b), .b(d) , .y(n3));
+
+assign y = c | (b & n1); 
+
+
+endmodule
+```
+**Synthesis**
+```
+read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib  
+read_verilog multiple_module_opt.v
+synth -top multiple_module_opt
+flatten
+opt_clean -purge
+abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+show
+```
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/1374b9f8-bdba-470b-989d-f4e306f25370)
+
+
+# Sequential logic optimizations
+**dff_const1.v**
+``` v
+module dff_const1(input clk, input reset, output reg q);
+always @(posedge clk, posedge reset)
+begin
+	if(reset)
+		q <= 1'b0;
+	else
+		q <= 1'b1;
+end
+
+endmodule
+```
+**Simulate**
+```
+iverilog dff_const1.v tb_dff_const1.v
+./a.out
+gtkwave tb_dff_const1.vcd
+```
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/6d4d090e-9ced-4af1-9d0a-8f6e2104d4b3)
+
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/2e21ad3d-2f7a-4461-a942-b2137756d423)
+
+**Synthesis**
+```
+  read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib  
+  read_verilog dff_const1.v
+  synth -top dff_const1
+  dfflibmap -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib 
+  abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+  show
+```
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/1bd4c17b-1cac-49c4-afa4-a0c6932b684e)
+
+**dff_const2.v**
+``` v
+module dff_const2(input clk, input reset, output reg q);
+always @(posedge clk, posedge reset)
+begin
+	if(reset)
+		q <= 1'b1;
+	else
+		q <= 1'b1;
+end
+
+endmodule
+```
+**Simulate**
+```
+iverilog dff_const1.v tb_dff_const2.v
+./a.out
+gtkwave tb_dff_const2.vcd
+```
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/4d37a8da-7455-4fa5-a6ce-f6d80be2b4cc)
+
+
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/62f2985a-46e7-4efe-9e65-826790caba3c)
+
+
+**Synthesis**
+```
+  read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib  
+  read_verilog dff_const2.v
+  synth -top dff_const2
+  dfflibmap -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib 
+  abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+  show
+```
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/4e54f6d6-18b5-4c9c-b6ea-abe217eeb908)
+
+**dff_const3.v**
+``` v
+module dff_const3(input clk, input reset, output reg q);
+reg q1;
+
+always @(posedge clk, posedge reset)
+begin
+	if(reset)
+	begin
+		q <= 1'b1;
+		q1 <= 1'b0;
+	end
+	else
+	begin
+		q1 <= 1'b1;
+		q <= q1;
+	end
+end
+
+endmodule
+```
+
+**Simulate**
+```
+iverilog dff_const3.v tb_dff_const2.v
+./a.out
+gtkwave tb_dff_const3.vcd
+```
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/4742f441-c2ff-4f8c-b2ab-81ec6ca798c8)
+
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/65f1c02c-d105-4b9d-8774-7c5089d240d6)
+
+**Synthesis**
+```
+  read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib  
+  read_verilog dff_const3.v
+  synth -top dff_const3
+  dfflibmap -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib 
+  abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+  show
+```
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/d97a22b3-9d14-405e-a3b7-6f9322b6c607)
+
+
+# Sequential optimzations for unused outputs
+**counter_opt.v**
+``` v
+module counter_opt (input clk , input reset , output q);
+reg [2:0] count;
+assign q = count[0];
+
+always @(posedge clk ,posedge reset)
+begin
+	if(reset)
+		count <= 3'b000;
+	else
+		count <= count + 1;
+end
+
+endmodule
+```
+**Synthesis**
+```
+  read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib  
+  read_verilog counter_opt.v
+  synth -top counter_opt
+  dfflibmap -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib 
+  abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+  show
+```
+
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/3cd19395-c172-4389-b1a4-951a89cd896d)
+
+**counter_opt2.v**
+``` v
+module counter_opt (input clk , input reset , output q);
+reg [2:0] count;
+assign q = (count[2:0] == 3'b100);
+
+always @(posedge clk ,posedge reset)
+begin
+	if(reset)
+		count <= 3'b000;
+	else
+		count <= count + 1;
+end
+
+endmodule
+```
+**Synthesis**
+```
+  read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib  
+  read_verilog counter_opt2.v
+  synth -top counter_opt
+  dfflibmap -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib 
+  abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+  show
+```
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/d8878c09-071f-4a89-8c06-4feb4958ed02)
+
+# GLS Synthesis-Simulation mismatch and Blocking Non-blocking statements
+## GLS Concepts And Flow Using Iverilog
+### Gate level simulation
++ Gate-level simulation is a method used in electronics design to test and verify digital circuits at the level of individual logic gates and flip-flops.
++ It's crucial for checking functionality, timing, power consumption, and generating test patterns for integrated circuits.
++ It operates at a lower abstraction level than higher-level simulations and is essential for debugging and ensuring circuit correctness.
+
+### To perform gate-level simulation using Icarus Verilog (iverilog):
+
+1. Write RTL code.
+2. Synthesize to generate gate-level netlist.
+3. Create a testbench in Verilog.
+4. Compile both netlist and testbench.
+5. Run simulation with compiled files.Debug and iterate as needed.
+6. Perform timing analysis if necessary.
+7. Generate test vectors for manufacturing tests.
+
+## Synthesis-Simulation mismatch
++ Synthesis-simulation mismatch is when there are differences between how a digital circuit behaves in simulation at the RTL level and how it behaves after gate-level synthesis.
++ This can occur due to optimization, clock domain issues, library differences, or other factors.
++ To address it, ensure consistent tool versions, check synthesis settings, debug with simulation tools, and follow best practices in RTL coding and design.
++ Resolving these mismatches is crucial for reliable hardware implementation.
+
+## Blocking And Non-Blocking Statements
+**Blocking Statements**
++ Blocking statements execute sequentially in the order they appear within a procedural block or always block.
++ When a blocking assignment or operation is encountered, the simulation halts and waits for it to complete before moving on to the next statement.
++ Blocking assignments are typically used to describe combinational logic, where the order of execution doesn't matter, and each assignment depends on the previous one.
+
+**Example (Blocking Assignment):** `a = b + c; // b and c must be known before calculating 'a'`
+
+**Non-Blocking Statements**
++ Non-blocking statements allow concurrent execution within a procedural block or always block, making them suitable for describing synchronous digital circuits.
++ When a non-blocking assignment or operation is encountered, the simulation does not wait for it to complete. Instead, it schedules the assignments to occur in parallel.
++ Non-blocking assignments are typically used to model sequential logic, like flip-flops and registers, where parallel execution is required.
+
+**Example (Non-Blocking Assignment):** 
+```
+always @(posedge clk)
+  begin
+    b <= a; // Concurrently scheduled assignment
+    c <= b; // Concurrently scheduled assignment
+  end
+```
+## Caveats With Blocking Statements
+**Caveats with blocking statements in hardware description languages like Verilog include:**
++ **Sequential Execution:** Blocking statements execute sequentially, which may not accurately represent concurrent hardware behavior in the design.
+
++ **Order Dependency:** The order of blocking statements can affect simulation results, leading to race conditions or unintended behavior.
+
++ **Combinational Logic Only:** Blocking statements are primarily used for modeling combinational logic, making them less suitable for sequential or synchronous logic.
+
++ **Limited for Testbenches:** In testbench code, excessive use of blocking statements can lead to simulation race conditions that don't reflect real-world hardware behavior.
+
++ **Initialization Issues:** In some cases, initializing variables with blocking assignments can lead to unexpected results due to order-dependent initialization.
+
+To mitigate these issues, designers often use non-blocking statements for modeling sequential logic and adopt good coding practices to minimize order dependencies and improve code clarity.
+
+# Labs on GLS and Synthesis-Simulation Mismatch
+**ternary_operator_mux.v**
+``` v
+module ternary_operator_mux (input i0 , input i1 , input sel , output y);
+	assign y = sel?i1:i0;
+endmodule
+```
+**RTL Simulation**
+```
+iverilog ternary_operator_mux.v tb_ternary_operator_mux.v
+./a.out
+gtkwave tb_ternary_operator_mux.vcd
+```
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/5892265f-24c5-48af-96b6-82361ca2fd3b)
+
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/858a402e-90ec-4104-a22a-f7f965874aba)
+
+**Synthesis**
+```
+read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+read_verilog ternary_operator_mux.v
+synth -top ternary_operator_mux
+abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+write_verilog -noattr ternary_operator_mux_netlist.v
+show
+```
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/2712aa2c-0d4d-41e4-a5f1-6a29a94cd5cf)
+
+**GLS**
+To to Gate level simulation, Invoke iverilog with verilog modules
+```
+iverilog ../my_lib/verilog_model/primitives.v ../my_lib/verilog_model/sky130_fd_sc_hd.v ternary_operator_mux_netlist.v tb_ternary_operator_mux.v
+./a.out
+gtkwave tb_ternary_operator_mux.vcd
+```
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/e9f9e6da-6f0a-44f3-afd6-93d402cfae5e)
+
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/701f28e3-67bc-437a-a24b-12a928d3376e)
+
+** bad_mux.v**
+``` v
+module bad_mux (input i0 , input i1 , input sel , output reg y);
+always @ (sel)
+begin
+	if(sel)
+		y <= i1;
+	else 
+		y <= i0;
+end
+endmodule
+```
+**RTL Simulation**
+```
+iverilog bad_mux.v tb_bad_mux.v
+./a.out
+gtkwave tb_bad_mux.vcd
+```
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/b32854d7-cb91-46f6-bf3a-e912888f0514)
+
+
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/b144557e-9215-4de9-b9b3-a83fc9149bb5)
+
+
+**Synthesis**
+```
+read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+read_verilog bad_mux.v
+synth -top bad_mux
+abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+write_verilog -noattr bad_mux_netlist.v
+show
+```
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/a01f7594-e881-48ca-aaba-9e0838b5dd3a)
+
+**GLS**
+To to Gate level simulation, Invoke iverilog with verilog modules
+```
+iverilog ../my_lib/verilog_model/primitives.v ../my_lib/verilog_model/sky130_fd_sc_hd.v bad_mux_netlist.v tb_bad_mux.v
+./a.out
+gtkwave tb_bad_mux.vcd
+```
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/86c90faf-1455-4dde-9df9-998aeffadd8e)
+
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/b546fec7-b909-44e0-8bff-7148d3747575)
+
+
+# Labs on synth-sim mismatch for blocking statement
+**blocking_caveat.v**
+``` v
+module blocking_caveat (input a , input b , input  c, output reg d); 
+reg x;
+always @ (*)
+begin
+	d = x & c;
+	x = a | b;
+end
+endmodule
+```
+**RTL Simulation**
+```
+iverilog blocking_caveat.v tb_blocking_caveat.v
+./a.out
+gtkwave tb_blocking_caveat.vcd
+```
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/c1c3bebd-6d76-4ec1-8298-c8ba9e096aa1)
+
+
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/14a2b18e-48c8-438f-a368-5e8e0d4042e0)
+
+**Synrhesis**
+```
+read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+read_verilog blocking_caveat.v
+synth -top blocking_caveat
+abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+write_verilog -noattr blocking_caveat_netlist.v
+show
+```
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/a61a4307-2ed9-4497-a9e8-433feeea0a18)
+
+To to Gate level simulation, Invoke iverilog with verilog modules
+```
+iverilog ../my_lib/verilog_model/primitives.v ../my_lib/verilog_model/sky130_fd_sc_hd.v blocking_caveat_netlist.v tb_blocking_caveat.v
+./a.out
+gtkwave tb_blocking_caveat.vcd
+```
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/801eaae9-99ae-4560-8140-03520fb73c99)
+
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/0d7b1dc2-0733-4042-b8af-293fabcdee7f)
