@@ -272,10 +272,10 @@ To store 64 bits of data from mem to reg, we use 8*8bit stores ie., m[0],m[1]...
 - It looks for the changes in input signal
 - upon change to the input the out put is evaluated
 
-![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/fc0678b8-9f76-4875-b9ec-186e9014cf81)
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/084055be-5faa-4ab8-86bb-b5af28cf6827)
 
 
-![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/36fbf839-436b-4c5b-867e-1baad44ea79c)
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/6eafc454-a796-436a-9a36-23b5dad97a84)
 
 
 # Labs using iverilog and gtkwave
@@ -354,10 +354,11 @@ endmodule
 ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/b752119d-e137-4568-b3c7-159150ed5eaf)
 
 # Introduction to Yosys and Logic synthesis
+
 ## Introduction to yosys
 Yosys is an synthesizer which is used to convert RTL to netlist
 
-![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/b1898ff0-3dae-4481-84d0-059357999efd)
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/c9631baf-1521-4cda-8a46-4bb76cde1d5c)
 
 
 **`netlist` is the representation of `DESIGN` in the form of standard cells present in `.lib`**
@@ -366,7 +367,8 @@ Yosys is an synthesizer which is used to convert RTL to netlist
 - vcd file generated from iverilog need to be fed to gtkwave simulator
 - The output we get should be same as the output we got during RTL simulator
 
-![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/f0b78ea8-e0df-4e81-869f-f1bdd1e4c624)
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/0633ac8c-0caf-4761-a180-6af595952dab)
+
 
 ## Introduction to logic synthesis
 Logic synthesis is a vital step in digital circuit design where high-level descriptions of circuits are transformed into specific implementations using logic gates. It optimizes circuits for factors like performance, area, power, and cost. The process includes library mapping, optimization, technology mapping, timing analysis, and verification. It's an iterative process often done with specialized software tools, enabling efficient hardware design.
@@ -377,7 +379,8 @@ Logic synthesis is a vital step in digital circuit design where high-level descr
 ### why fast and slow version of same gate?
 Fast and slow versions of gates are essential in digital circuit design to balance between clock frequency and timing constraints. Fast gates have shorter propagation delays and are used to reduce setup and hold time violations, allowing for higher clock frequencies. Slow gates, with longer delays, can be used to intentionally slow down critical paths or address timing issues. The Tclk formula helps calculate the maximum clock frequency while considering these factors.
 
-**Tclk formula:** ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/b52025b4-dd5b-4963-afc0-ddeef120ca9d)
+**Tclk formula:** ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/58563974-04bd-4705-af1a-26b5df977ef9)
+
 
 
 - **t_setup:** The setup time is the minimum time before the clock edge when the input data must be stable.
@@ -389,24 +392,25 @@ Fast and slow versions of gates are essential in digital circuit design to balan
 Steps to realize good_mux(design) in terms of standard cells avilable in library sky130_fd_sc_hd__tt_025C_1v80.lib
 + Go to verilog_files directory
 + once you get to verilog_files directory, Invoke yosys by using the command `yosys`
-  ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/8de806de-7443-43ba-9788-b5382d851cb5)
+  ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/f538a51f-422d-45a9-af48-78c32a04b158)
+
 
   1. Read library: `read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib`
-     ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/1ace6948-9923-466f-a48e-4a9b8972cf97)
+     ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/c66694f9-e738-493d-a0fe-f9a849c973ea)
+
 
   3. Read design: `read_verilog good_mux.v`
-     ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/0e403154-57bb-4f58-be5e-95e227b88cf3)
+     ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/faf284dd-82d2-430f-89ba-7a4a7888ab7d)
 
 
   5. Synthesis: `synth -top good_mux`
-  6. ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/8516a42c-46b2-4d18-88ab-f5ac229b8edb)
-
+  6. ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/14dbf62a-33f1-4bce-b04f-d221551a35a1)
 
   7. Generate netlist: `abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib`
-     ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/59552a19-baaf-4794-85cb-26c66a3cc90b)
+     ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/e3ba558e-8a26-4053-a56f-e964e7ddf57c)
 
   9. Logic realized: `show`
-      ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/9e632a1b-08d6-45c8-8523-861d88216040)
+      ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/45cd4860-4521-4717-b5db-64bba8254716)
 
 
   10. Write netlist: `write_verilog -noattr good_mux_netlist.v`, `!gvim good_mux_netlist.v`
@@ -488,7 +492,7 @@ endmodule
   write_verilog -noattr multiple_modules_hier.v
   !gvim multiple_modules_hier.v
   ```
-  ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/8ceb5323-6a38-40ea-b66a-689b0547df5b)
+  ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/d237c6e6-8239-4797-a27a-383601294823)
 
   **multiple_modules_hier.v**
   ``` v
@@ -576,7 +580,8 @@ endmodule
   write_verilog -noattr multiple_modules_flat.v
   !gvim multiple_modules_flat.v
   ```
-  ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/f988da11-18b1-435f-95d9-2e8bab49491d)
+  ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/8199252b-14b9-449a-9974-d6bffa123860)
+
 
 
   **multiple_modules_flat.v**
@@ -731,7 +736,7 @@ Once you invoke yosys, Run following commands to Synthsis dff_asyncres
   abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
   show
 ```
-![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/23d0a8e4-49b5-4b2e-b9bf-d41ad8d940ee)
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/6796b58d-4f61-4b54-8f35-ed81d00599db)
 
 
 **Asynchronous set D Flip-Flop**
@@ -764,8 +769,7 @@ Once you invoke yosys, Run following commands to Synthsis dff_async_set
   abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
   show
 ```
-![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/63e81ea4-a074-47f9-810e-485eca83d583)
-
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/2d05d05a-b8b7-4848-86fc-6a2df2ffe17c)
 
 **Asynchronous Reset D Flip-Flop**
 
@@ -796,7 +800,7 @@ Once you invoke yosys, Run following commands to Synthsis dff_syncres
   abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
   show
 ```
-![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/6baaae48-520a-4e0a-9c5a-c2efb422e0fa)
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/0f565c6b-0fcc-4d2f-8a27-09642be1f989)
 
 
  ## Interesting optimisations 
@@ -816,9 +820,11 @@ show
 write_verilog -noattr mul2_netlist.v
 !gvim mul2_netlist.v
 ```
-![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/f172a636-1f96-4f9e-8968-15125fbd845d)
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/8feb3fc1-f4c3-4406-8c68-60f9f921000e)
 
-![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/b76d70fd-81de-4bf3-aafa-47e6c706951b)
+
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/05db2152-dad2-4bf7-9c7f-89d6f5cba9f5)
+
 
 **mul2_netlist.v**
 ``` v
@@ -899,8 +905,8 @@ abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
 show
 ```
 
-![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/a7963051-37b3-4327-b8b9-8766d156728b)
 
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/ae42dfdd-c6cc-46ce-b971-c3cf7dce5a6a)
 
 **opt_check2.v**
 ``` v
@@ -917,9 +923,8 @@ opt_clean -purge
 abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
 show
 ```
-![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/1da929eb-d5e2-4cdc-9ece-82926d950461)
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/68eca558-aaa8-4a45-83e0-59819d4328a7)
 
-**opt_check3.v**
 ``` v
 module opt_check3 (input a , input b, input c , output y);
 	assign y = a?(c?b:0):0;
@@ -934,7 +939,7 @@ opt_clean -purge
 abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
 show
 ```
-![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/3e0bb879-dfa0-4691-a003-1a51a880e5ce)
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/1a0e66cf-4674-4ce4-baa6-fa9eb48db0f7)
 
 
 **multiple_module_opt.v**
@@ -971,7 +976,8 @@ opt_clean -purge
 abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
 show
 ```
-![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/1374b9f8-bdba-470b-989d-f4e306f25370)
+
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/d7197163-fe5b-4481-afdf-84ae3ff4525e)
 
 
 # Sequential logic optimizations
