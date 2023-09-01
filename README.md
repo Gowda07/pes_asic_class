@@ -1013,7 +1013,8 @@ gtkwave tb_dff_const1.vcd
   abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
   show
 ```
-![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/1bd4c17b-1cac-49c4-afa4-a0c6932b684e)
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/6997e80a-32d7-47e5-8e52-4c2c255b559a)
+
 
 **dff_const2.v**
 ``` v
@@ -1049,7 +1050,7 @@ gtkwave tb_dff_const2.vcd
   abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
   show
 ```
-![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/4e54f6d6-18b5-4c9c-b6ea-abe217eeb908)
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/57c83604-3f6d-441a-b876-970938e1f4b8)
 
 **dff_const3.v**
 ``` v
@@ -1093,7 +1094,8 @@ gtkwave tb_dff_const3.vcd
   abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
   show
 ```
-![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/d97a22b3-9d14-405e-a3b7-6f9322b6c607)
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/78f37251-e14e-4911-a205-184ff559a702)
+
 
 
 # Sequential optimzations for unused outputs
@@ -1123,7 +1125,8 @@ endmodule
   show
 ```
 
-![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/3cd19395-c172-4389-b1a4-951a89cd896d)
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/a63ba744-a7fb-4746-b409-39fe133df766)
+
 
 **counter_opt2.v**
 ``` v
@@ -1150,7 +1153,7 @@ endmodule
   abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
   show
 ```
-![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/d8878c09-071f-4a89-8c06-4feb4958ed02)
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/90184c51-f7f3-41b2-a955-7e51cf21d839)
 
 # GLS Synthesis-Simulation mismatch and Blocking Non-blocking statements
 ## GLS Concepts And Flow Using Iverilog
@@ -1237,7 +1240,7 @@ abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
 write_verilog -noattr ternary_operator_mux_netlist.v
 show
 ```
-![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/2712aa2c-0d4d-41e4-a5f1-6a29a94cd5cf)
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/a9dc8780-6b34-4510-964e-402c2768cabb)
 
 **GLS**
 To to Gate level simulation, Invoke iverilog with verilog modules
@@ -1283,7 +1286,7 @@ abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
 write_verilog -noattr bad_mux_netlist.v
 show
 ```
-![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/a01f7594-e881-48ca-aaba-9e0838b5dd3a)
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/634c6634-7bb3-4f21-8107-d0e538064714)
 
 **GLS**
 To to Gate level simulation, Invoke iverilog with verilog modules
@@ -1329,7 +1332,7 @@ abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
 write_verilog -noattr blocking_caveat_netlist.v
 show
 ```
-![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/a61a4307-2ed9-4497-a9e8-433feeea0a18)
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/0929404e-f9b8-4a2e-8a9b-493c5008ef21)
 
 To to Gate level simulation, Invoke iverilog with verilog modules
 ```
