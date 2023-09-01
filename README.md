@@ -275,7 +275,7 @@ To store 64 bits of data from mem to reg, we use 8*8bit stores ie., m[0],m[1]...
 ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/fc0678b8-9f76-4875-b9ec-186e9014cf81)
 
 
-![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/900a7ebc-30d1-45ad-97e9-917b3d9f4fd9)
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/36fbf839-436b-4c5b-867e-1baad44ea79c)
 
 
 # Labs using iverilog and gtkwave
@@ -290,7 +290,7 @@ To store 64 bits of data from mem to reg, we use 8*8bit stores ie., m[0],m[1]...
 ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/d95b299a-8ae8-4cc4-be6b-6542da15e850)
 
 
-![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/a5351b2d-6289-4fe6-a0c1-737db78b654a)
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/1f1b61a6-f895-4ee0-953e-0cc86d1db34b)
 
 
 ## Introduction iverilog gtkwave
@@ -716,8 +716,7 @@ gtkwave tb_dff_asyncres.vcd
 ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/b747ed55-8e27-45de-a1c3-a2ba5a55e9a4)
 
 
-![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/9e69afcd-bb2c-46d8-8988-ff5b8dc28d34)
-
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/0a94eee0-f77d-441a-987d-6ed0b8fc6610)
 
 **Synthsis**
 
@@ -749,7 +748,7 @@ gtkwave tb_dff_async_set.vcd
 ```
 ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/d6d98a90-42f5-456d-ace4-d282c333085c)
 
-![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/3263a188-82e0-4ee9-b3ed-0cb4879c8fc7)
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/196d43f5-c856-4d0b-bfa0-04d9945a4ec6)
 
 
 **Synthsis**
@@ -782,8 +781,7 @@ gtkwave tb_dff_syncres.vcd
 ```
 ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/bb46ccb7-a4e6-40b2-acc1-8c3d2eb59b94)
 
-![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/e7fda44c-8851-46a9-8f15-43e47fcf48e0)
-
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/8bfb9096-9ffd-4f33-b060-3ed6e85aed40)
 
 **Synthsis**
 
@@ -820,8 +818,7 @@ write_verilog -noattr mul2_netlist.v
 ```
 ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/f172a636-1f96-4f9e-8968-15125fbd845d)
 
-![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/7db5b947-6047-443b-91c1-cb1e5aaa4ad3)
-
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/b76d70fd-81de-4bf3-aafa-47e6c706951b)
 
 **mul2_netlist.v**
 ``` v
@@ -855,7 +852,8 @@ write_verilog -noattr mult8_netlist.v
 ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/18ae7ea5-b8ce-40d6-ab4a-5c78247d6011)
 
 
-![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/5f32ecec-0775-43b8-b521-ba3641fb37e9)
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/8500cde0-a2ce-4eb1-be62-78f3be1ae230)
+
 
 **mult8_netlist.v**
 ``` v
@@ -998,7 +996,7 @@ gtkwave tb_dff_const1.vcd
 ```
 ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/6d4d090e-9ced-4af1-9d0a-8f6e2104d4b3)
 
-![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/2e21ad3d-2f7a-4461-a942-b2137756d423)
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/5b0a5508-dcc4-4176-9c7b-a63d9cca7a32)
 
 **Synthesis**
 ```
@@ -1033,7 +1031,7 @@ gtkwave tb_dff_const2.vcd
 ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/4d37a8da-7455-4fa5-a6ce-f6d80be2b4cc)
 
 
-![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/62f2985a-46e7-4efe-9e65-826790caba3c)
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/175ef0ad-370b-49be-ab46-996269e303bc)
 
 
 **Synthesis**
@@ -1077,7 +1075,8 @@ gtkwave tb_dff_const3.vcd
 ```
 ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/4742f441-c2ff-4f8c-b2ab-81ec6ca798c8)
 
-![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/65f1c02c-d105-4b9d-8774-7c5089d240d6)
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/d905b9c0-18b1-42cc-ad66-a95c00a0e09c)
+
 
 **Synthesis**
 ```
@@ -1220,7 +1219,8 @@ gtkwave tb_ternary_operator_mux.vcd
 ```
 ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/5892265f-24c5-48af-96b6-82361ca2fd3b)
 
-![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/858a402e-90ec-4104-a22a-f7f965874aba)
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/76892db9-d225-46da-811b-0fa9aeabe7f2)
+
 
 **Synthesis**
 ```
@@ -1242,7 +1242,7 @@ gtkwave tb_ternary_operator_mux.vcd
 ```
 ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/e9f9e6da-6f0a-44f3-afd6-93d402cfae5e)
 
-![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/701f28e3-67bc-437a-a24b-12a928d3376e)
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/cebc3e29-bb5c-46a7-b6af-17c8fa8041d5)
 
 ** bad_mux.v**
 ``` v
@@ -1265,7 +1265,7 @@ gtkwave tb_bad_mux.vcd
 ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/b32854d7-cb91-46f6-bf3a-e912888f0514)
 
 
-![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/b144557e-9215-4de9-b9b3-a83fc9149bb5)
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/3849ec80-089a-4da6-976d-a1bcdf4bc576)
 
 
 **Synthesis**
@@ -1288,7 +1288,7 @@ gtkwave tb_bad_mux.vcd
 ```
 ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/86c90faf-1455-4dde-9df9-998aeffadd8e)
 
-![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/b546fec7-b909-44e0-8bff-7148d3747575)
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/9dc20104-94b9-42cf-ba1e-295ff28ec57b)
 
 
 # Labs on synth-sim mismatch for blocking statement
@@ -1312,7 +1312,7 @@ gtkwave tb_blocking_caveat.vcd
 ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/c1c3bebd-6d76-4ec1-8298-c8ba9e096aa1)
 
 
-![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/14a2b18e-48c8-438f-a368-5e8e0d4042e0)
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/62de4fcc-86dd-4664-a1de-a3d701afdd1d)
 
 **Synrhesis**
 ```
@@ -1333,4 +1333,4 @@ gtkwave tb_blocking_caveat.vcd
 ```
 ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/801eaae9-99ae-4560-8140-03520fb73c99)
 
-![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/0d7b1dc2-0733-4042-b8af-293fabcdee7f)
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/2ebedda3-e7e9-4c9b-a123-84a86ffcb189)
