@@ -275,7 +275,7 @@ To store 64 bits of data from mem to reg, we use 8*8bit stores ie., m[0],m[1]...
 ![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/084055be-5faa-4ab8-86bb-b5af28cf6827)
 
 
-![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/6eafc454-a796-436a-9a36-23b5dad97a84)
+![image](https://github.com/Gowda07/pes_asic_class/assets/142581040/5a0190f7-5697-4934-b42a-b94448dae581)
 
 
 # Labs using iverilog and gtkwave
